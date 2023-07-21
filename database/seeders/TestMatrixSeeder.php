@@ -38,7 +38,7 @@ class TestMatrixSeeder extends Seeder
         User::create([
             'name'=> 'user',
             'last_name'=> 'admin',
-            'email'=> 'admin@b2b.com',
+            'email'=> 'admin@networkx.com',
             'user_name'=> 'admin',
             'admin' => '1',
             // 'password' => Hash::make('12345678'),
@@ -51,7 +51,7 @@ class TestMatrixSeeder extends Seeder
         $user = User::create([
             'name'=> 'user',
             'last_name'=> 1,
-            'email'=> "user1@b2b.com",
+            'email'=> "user1@networkx.com",
             'user_name'=> 'user1',
             'admin'=> '0',
             // 'password' => Hash::make('123456789'),
@@ -106,14 +106,14 @@ class TestMatrixSeeder extends Seeder
 
         $bonusService->generateBonus(20, $user, $order, $buyer = $user, $level = 2, $user->id);
 
-        for($i = 3; $i < 33; $i++) {
+        for($i = 3; $i <= 5; $i++) {
             
             $father = User::where('id', round($i / 2))->with('marketPurchased')->first();
 
             $user = User::create([
                 'name'=> 'user',
                 'last_name'=> $i,
-                'email'=> "user{$i}@b2b.com",
+                'email'=> "user{$i}@networkx.com",
                 'user_name'=> 'user'.$i,
                 'admin'=> '0',
                 // 'password' => Hash::make('123456789'),
