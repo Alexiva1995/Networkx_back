@@ -42,7 +42,6 @@ class User extends Authenticatable implements JWTSubject
         'token_auth',
         'token_jwt',
         'email_verified_at',
-        'matrix_level',
         'wallet',
         'kyc',
         'can_buy_fast',

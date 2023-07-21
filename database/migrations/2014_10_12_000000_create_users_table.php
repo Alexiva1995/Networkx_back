@@ -40,7 +40,6 @@ return new class extends Migration
             $table->enum('admin', [0, 1])->default(0)->comment('0 - Usuario, 1 - Administrador');
             $table->enum('status', [0, 1, 2])->default(1)->comment('0 - inactivo, 1 - activo, 2 - eliminado');
             $table->string('phone')->nullable();
-            $table->tinyInteger('matrix_level')->default(0);
             $table->string('activar_2fact')->nullable();
             $table->string('token_auth')->nullable();
             $table->string('code_security', 255)->nullable()->onUpdate();
