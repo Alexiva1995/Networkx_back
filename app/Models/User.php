@@ -47,7 +47,6 @@ class User extends Authenticatable implements JWTSubject
         'kyc',
         'can_buy_fast',
         'profile_picture',
-        'father_cyborg_purchased_id',
         'type_service',
     ];
 
@@ -232,12 +231,5 @@ class User extends Authenticatable implements JWTSubject
     public function marketPurchased()
     {
         return $this->hasMany(MarketPurchased::class);
-    }
-    /**
-     * Este metodo retorna la matrix/cyborg a la que pertenece este usuario, donde el dueño es su padre (es decir el buyer_id)
-     */
-    public function getFatherMarketPurchased()
-    {
-        return MarketPurchased::where('user_id', $this->buyer_id)->where('id', $this->father_cyborg_purchased_id)->first();
     }
 }

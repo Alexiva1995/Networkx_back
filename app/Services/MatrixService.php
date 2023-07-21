@@ -24,10 +24,10 @@ class MatrixService
             foreach ($user->marketPurchased as $matrixPurchased) {
                 $userRight = User::whereHas('marketPurchased', function ($q) use ($matrixPurchased) {
                     $q->where('type', '>=', $matrixPurchased->type);
-                })->where('father_cyborg_purchased_id', $matrixPurchased->id)->where('binary_side', 'R')->where('buyer_id', $user->id)->where('status', User::ACTIVE)->first();
+                })->where('binary_side', 'R')->where('buyer_id', $user->id)->where('status', User::ACTIVE)->first();
                 $userLeft = User::whereHas('marketPurchased', function ($q) use ($matrixPurchased) {
                     $q->where('type', '>=', $matrixPurchased->type);
-                })->where('father_cyborg_purchased_id', $matrixPurchased->id)->where('binary_side', 'L')->where('buyer_id', $user->id)->where('status', User::ACTIVE)->first();
+                })->where('binary_side', 'L')->where('buyer_id', $user->id)->where('status', User::ACTIVE)->first();
                 if ($userLeft && $userRight) {
 
                     if ($matrixPurchased->level < 1) {

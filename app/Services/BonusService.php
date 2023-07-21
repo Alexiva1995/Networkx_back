@@ -42,7 +42,6 @@ class BonusService
                     'amount_available' => $amount,
                     'type' => $amount == 20 ? WalletComission::TYPE_MATRIX20 : ($amount == 200 ? WalletComission::TYPE_MATRIX200 : WalletComission::TYPE_MATRIX2000),
                     'status' => WalletComission::STATUS_PENDING,
-                    'father_cyborg_purchased_id' => is_null($buyer) ? null : (is_null($buyer->getFatherMarketPurchased()) ? null : $buyer->getFatherMarketPurchased()->id),
                     'level' => $level
                 ]);
 
@@ -59,8 +58,7 @@ class BonusService
 
     public function subtract(int $amount, int $user_id, $matrix_id = null, int $level, User $user, int $matrix_type)
     {
-        $wallets = WalletComission::where('user_id', $user_id)->where('status', WalletComission::STATUS_PENDING)
-            ->where('father_cyborg_purchased_id', $matrix_id)->where('level', $level)->get();
+        $wallets = WalletComission::where('user_id', $user_id)->where('status', WalletComission::STATUS_PENDING)->where('level', $level)->get();
 
         foreach ($wallets as $wallet) {
             $wallet->status = WalletComission::STATUS_AVAILABLE;
@@ -159,7 +157,6 @@ class BonusService
             'amount_available' => $amount,
             'type' => $matrix_type,
             'status' => WalletComission::STATUS_PENDING,
-            'father_cyborg_purchased_id' => null,
             'level' => $level_to_scale
         ]);
     }
