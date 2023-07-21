@@ -41,38 +41,32 @@ class UserController extends Controller
     }
 
     public function listReferrals()
-{
-    $user = JWTAuth::parseToken()->authenticate();
-    $referrals = $this->getReferrals($user);
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        $referrals = $this->getReferrals($user);
 
-    $referralList = $referrals->map(function ($referral) {
-        $buyerUser = User::find($referral['buyer_id']);
-        $buyerName = $buyerUser ? $buyerUser->name : '';
+        $referralList = $referrals->map(function ($referral) {
+            $buyerUser = User::find($referral['buyer_id']);
+            $buyerName = $buyerUser ? $buyerUser->name : '';
 
-        $user = User::find($referral['id']);
-        $plan = $user ? $user->matrix_type : '';
+            $user = User::find($referral['id']);
+            $plan = $user ? $user->matrix_type : '';
 
-        // Si el plan es nulo, asignarle el valor 20
-        $plan = $plan ?? 20;
+            // Si el plan es nulo, asignarle el valor 20
+            $plan = $plan ?? 20;
 
-        return [
-            'Name' => $referral['name'],
-            'Buyer_ID' => $buyerName,
-            'User_ID' => $referral['id'],
-            'Side' => ($referral['side'] === 'L') ? 'Left' : 'Right',
-            'Date' => date('Y-m-d H:i:s'),
-            'Plan' => $plan,
-        ];
-    });
+            return [
+                'Name' => $referral['name'],
+                'Buyer_ID' => $buyerName,
+                'User_ID' => $referral['id'],
+                'Side' => ($referral['side'] === 'L') ? 'Left' : 'Right',
+                'Date' => date('Y-m-d H:i:s'),
+                'Plan' => $plan,
+            ];
+        });
 
-    return $referralList;
-}
-
-    
-    
-
-
-
+        return $referralList;
+    }
 
     public function getReferrals(User $user, $level = 1, $maxLevel = 4, $parentSide = null): Collection
     {
@@ -126,28 +120,28 @@ class UserController extends Controller
         return $sortedReferrals;
     }
 
-    
+
 
     public function getLast10Withdrawals()
     {
         $user = JWTAuth::parseToken()->authenticate();
-    
+
         $withdrawals = WalletComission::select('id', 'description', 'amount', 'created_at')
             ->where('user_id', $user->id)
             ->where('avaliable_withdraw', '=', 0)
             ->take(15)
             ->get();
-    
+
         $data = $withdrawals->map(function ($item) {
             $item['created_at'] = $item['created_at']->format('Y-m-d');
             return $item;
         });
-    
+
         return response()->json($data, 200);
     }
-    
-    
-    
+
+
+
 
     public function getUserOrders()
     {
@@ -174,82 +168,82 @@ class UserController extends Controller
     }
 
     public function getMonthlyOrders()
-{
-    $user = JWTAuth::parseToken()->authenticate();
+    {
+        $user = JWTAuth::parseToken()->authenticate();
 
-    $orders = Order::selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, SUM(amount) AS total_amount')
-        ->where('user_id', $user->id)
-        ->groupBy('year', 'month')
-        ->get();
+        $orders = Order::selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, SUM(amount) AS total_amount')
+            ->where('user_id', $user->id)
+            ->groupBy('year', 'month')
+            ->get();
 
-    $data = [];
+        $data = [];
 
-    foreach ($orders as $order) {
-        $month = $order->month;
-        $year = $order->year;
-        $totalAmount = $order->total_amount;
+        foreach ($orders as $order) {
+            $month = $order->month;
+            $year = $order->year;
+            $totalAmount = $order->total_amount;
 
-        $date = Carbon::create($year, $month)->format('M');
+            $date = Carbon::create($year, $month)->format('M');
 
-        // Agregar los datos al arreglo de la gráfica
-        $data[$date] = $totalAmount;
+            // Agregar los datos al arreglo de la gráfica
+            $data[$date] = $totalAmount;
+        }
+
+        return response()->json($data, 200);
     }
 
-    return response()->json($data, 200);
-}
 
-    
 
     public function getMonthlyEarnings()
     {
         $user = JWTAuth::parseToken()->authenticate();
-    
+
         $commissions = WalletComission::selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, SUM(amount) AS total_amount')
             ->where('user_id', $user->id)
             ->groupBy('year', 'month')
             ->get();
-    
+
         $data = [];
-    
+
         foreach ($commissions as $commission) {
             $month = $commission->month;
             $earnings = $commission->total_amount;
 
             // Formatear la fecha para que coincida con el formato del método getMonthlyCommissions()
-              $date = Carbon::create( $month)->format('M');
-    
+            $date = Carbon::create($month)->format('M');
+
             $data[$date] = $earnings;
         }
-    
+
         return response()->json($data, 200);
     }
-    
+
 
     public function getMonthlyCommissions()
-{
-    $user = JWTAuth::parseToken()->authenticate();
+    {
+        $user = JWTAuth::parseToken()->authenticate();
 
-    $commissions = WalletComission::selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, SUM(amount) AS total_amount')
-        ->where('user_id', $user->id)
-        ->groupBy('year', 'month')
-        ->get();
+        $commissions = WalletComission::selectRaw('YEAR(created_at) AS year, MONTH(created_at) AS month, SUM(amount) AS total_amount')
+            ->where('user_id', $user->id)
+            ->groupBy('year', 'month')
+            ->get();
 
-    $data = [];
+        $data = [];
 
-    foreach ($commissions as $commission) {
-        $month = $commission->month;
-        $year = $commission->year;
-        $totalAmount = $commission->total_amount;
+        foreach ($commissions as $commission) {
+            $month = $commission->month;
+            $year = $commission->year;
+            $totalAmount = $commission->total_amount;
 
-        // Formatear la fecha para que coincida con el formato del método gainWeekly()
-        $date = Carbon::create($year, $month)->format('M');
+            // Formatear la fecha para que coincida con el formato del método gainWeekly()
+            $date = Carbon::create($year, $month)->format('M');
 
-        // Agregar los datos al arreglo de la gráfica
-        $data[$date] = $totalAmount;
+            // Agregar los datos al arreglo de la gráfica
+            $data[$date] = $totalAmount;
+        }
+
+        return response()->json($data, 200);
     }
-
-    return response()->json($data, 200);
-}
 
 
     public function myBestMatrixData()
@@ -257,13 +251,13 @@ class UserController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
 
         $lastApprovedCyborg = Order::where('user_id', $user->id)
-        ->where('status', '1')
-        ->latest('cyborg_id')
-        ->first();
+            ->where('status', '1')
+            ->latest('cyborg_id')
+            ->first();
 
         $profilePicture = $user->profile_picture ?? '';
 
-        $userPlan = User::where('id', $user->id)->value('type_matrix'); 
+        $userPlan = User::where('id', $user->id)->value('type_matrix');
 
         $userPlan = $userPlan ?? 20;
 
@@ -277,7 +271,7 @@ class UserController extends Controller
         $earning = WalletComission::where('user_id', $user->id)
             ->sum('amount');
 
-        $cyborg = $lastApprovedCyborg->cyborg_id;    
+        $cyborg = $lastApprovedCyborg->cyborg_id;
 
         $data = [
             'id' => $user->id,
@@ -291,7 +285,7 @@ class UserController extends Controller
         return response()->json($data, 200);
     }
 
-        public function getAllWithdrawals()
+    public function getAllWithdrawals()
     {
         $user = JWTAuth::parseToken()->authenticate();
 
@@ -306,28 +300,28 @@ class UserController extends Controller
     public function getUserBalance()
     {
         $user = JWTAuth::parseToken()->authenticate();
-    
+
         $data = WalletComission::where('status', 0)
             ->where('user_id', $user->id)
             ->sum('amount');
-    
+
         return response()->json($data, 200);
     }
-    
+
 
     public function getUserBonus()
     {
         $user = JWTAuth::parseToken()->authenticate();
-    
+
         $data = WalletComission::where('status', 0)
             ->where('user_id', $user->id)
             ->where('avaliable_withdraw', 1)
             ->sum('amount');
-    
+
         return response()->json($data, 200);
     }
-    
-    
+
+
 
     public function getUsersWalletsList()
     {

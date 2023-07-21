@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TreController;
 use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\VerifyEmailRequest;
 use App\Mail\ForgotPasswordNotification;
 use App\Mail\PasswordChangedNotification;
 use App\Models\Market;
@@ -42,32 +43,17 @@ class AuthController extends Controller
      */
     public function register(UserStoreRequest $request)
     {
+        $binary_side = 'R';
+        $binary_id = 1;
+        $buyer_id = 1;
+
+        if ($request->has('buyer_id')) {
+            $userFather = User::findOrFail($request->buyer_id);
+            $buyer_id = $request->buyer_id;
+            $binary_id = $this->treController->getPosition(intval($request->buyer_id), $binary_side);
+        }
 
         try {
-            // En $sponsor_id esta el id del padre (el dueño del link) aplicar logica correspondiente y obtener el lado adecuado (tarea processes de auth back)
-            $binary_side = 'R';
-            $sponsor_id = 1;
-            $binary_id = 1;
-            $link = null;
-            // Aca valida si el link de referido es valido, es decir el link de la matrix.Si no lo es, termina la ejecución acá.
-            if ($request->link_code) {
-                $validation = $this->checkMatrix($request->link_code, $request->binary_side, false);
-                if (!$validation['status']) {
-                    $response = ['Error' => 'Invalid referral link'];
-                    return response()->json($response, 400);
-                }
-                $sponsor_id = $validation['sponsor_id'];
-                $link = $validation['link'];
-            }
-
-            if ($request->has('binary_side')) $binary_side = $request->binary_side;
-
-            $userFather = User::findOrFail($sponsor_id);
-
-            if (gettype($sponsor_id) == 'integer') {
-                $binary_id = $this->treController->getPosition(intval($sponsor_id), $binary_side);
-            }
-
             DB::beginTransaction();
             $data = [
                 'name' => $request->user_name,
@@ -85,9 +71,9 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'email_verified_at' => now(),
                 'binary_side' => $binary_side,
-                'buyer_id' => $sponsor_id,
+                'buyer_id' => $buyer_id,
                 'prefix_id' => $request->prefix_id,
-                'status' => '0',
+                'status' => User::INACTIVE,
                 'code_security' => Str::random(12),
                 'phone' => $request->phone,
             ]);
@@ -98,39 +84,30 @@ class AuthController extends Controller
             $response = Http::withHeaders([
                 'apikey' => config('services.backend_auth.key'),
             ])->post("{$url}register", $data);
-            Log::alert($response);
+
             if ($response->successful()) {
+
                 $res = $response->object();
                 $user->update(['id' => $res->user->id]);
                 $dataEmail = ['user' => $user];
 
-                // Actualizamos el link si existe en el proceso
-                if ($link) {
-                    if ($binary_side == 'R') $link->right = 1;
-                    if ($binary_side == 'L') $link->left = 1;
-                    if ($link->right == 1 && $link->left == 1) $link->status = ReferalLink::STATUS_INACTIVE;
-                    $link->save();
-                }
-
-                DB::commit();
 
                 Mail::send('mails.verification',  ['data' => $dataEmail], function ($msj) use ($request) {
                     $msj->subject('Email verification.');
                     $msj->to($request->email);
                 });
 
+                DB::commit();
+
                 return response()->json([$user], 201);
             }
             DB::rollback();
-            $response = ['errors' => ['register' => [0 => 'Error registering users']]];
 
-            return response()->json($response, 500);
+            return response()->json(['Error' => 'Error registering user'], 500);
         } catch (\Throwable $th) {
             Log::error($th);
             DB::rollback();
-            // $response = ['Error' => 'Error registering user'];
-            $response = ['errors' => ['register' => [0 => 'Error registering users']]];;
-            return response()->json($response, 500);
+            return response()->json(['Error' => 'Error registering user'], 500);
         }
     }
     /**
@@ -292,16 +269,8 @@ class AuthController extends Controller
      * @param  \Iluminate\Http\Request $request
      * @return Json La respuesta en formato Json
      */
-    public function verifyEmail(Request $request)
+    public function verifyEmail(VerifyEmailRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'code_security' => 'required|exists:users,code_security',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
         $user = User::where('code_security', $request->code_security)->first();
 
         $data = ['email' => $user->email];

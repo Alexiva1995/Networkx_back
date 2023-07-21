@@ -50,7 +50,6 @@ Route::controller(AuthController::class)->group(function ($router) {
     Route::get('auth/user', 'getAuthUser');
     Route::get('/check-matrix/{code}', 'checkMatrix');
     Route::get('create-comision/{id}', 'createComission');
-    Route::get('/check-matrix/{code}/{side}', 'checkMatrix');
     Route::post('/first-purchase', 'firstPurchase');
 });
 Route::controller(LandingController::class)->group(function ($router) {
