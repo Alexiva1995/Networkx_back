@@ -105,7 +105,6 @@ Route::middleware('jwt')->group(function () {
             Route::get('find-user/{user_id}', 'findUser');
             Route::get('get-users-download', 'getUsersDownload');
             Route::post('update-user-affiliate', 'updateUserAffiliate');
-            Route::post('toggle-user-can-buy-fast', 'toggleUserCanBuyFast');
             Route::get('get-users-wallet-list', 'getUsersWalletsList');
             Route::post('get-filter-users-wallet-list', 'getFilterUsersWalletsList');
             Route::post('filter-users-wallet-list', 'filterUsersWalletsList');

@@ -802,21 +802,6 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function toggleUserCanBuyFast(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|exists:users',
-            'can_buy_fast' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
-        }
-
-        User::where('email', $request->email)->first()->update(['can_buy_fast' => $request->can_buy_fast]);
-
-        return response()->json(['status' => 'success', 'message' => 'User updated!'], 200);
-    }
     /**
      * Update the specified resource in storage.
      *

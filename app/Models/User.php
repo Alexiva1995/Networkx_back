@@ -43,7 +43,6 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at',
         'wallet',
         'kyc',
-        'can_buy_fast',
         'profile_picture',
         'type_service',
     ];
