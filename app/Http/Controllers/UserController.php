@@ -553,7 +553,6 @@ class UserController extends Controller
             $request->email == null || $request->email == ''
                 ? $user->email = $user->email
                 : $user->email = $request->email;
-            $user->status_change = null;
             $user->code_security = null;
             if ($request->hasFile('profile_picture')) {
 
@@ -668,11 +667,9 @@ class UserController extends Controller
             $responseObject = $response->object();
 
             if ($responseObject->status) {
-                $user->update(['status_change' => 1]);
                 return response()->json('Authorized credentials', 200);
             }
         } else {
-            $user->update(['status_change' => 0]);
             $response = ['message' => 'Code is not valid'];
             return response()->json($response, 422);
         }

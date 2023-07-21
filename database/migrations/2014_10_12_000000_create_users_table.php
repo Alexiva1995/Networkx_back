@@ -23,7 +23,6 @@ return new class extends Migration
             //       ->nullable()
             //       ->constrained('countries');
             $table->timestamp('code_verified_at')->nullable();
-            $table->integer('status_change')->nullable();
             $table->integer('kyc')
                    ->nullable()
                    ->comment('0 - En espera, 1 - Verificado, 2 - Cancelado');
