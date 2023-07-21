@@ -27,7 +27,6 @@ return new class extends Migration
                    ->nullable()
                    ->comment('0 - En espera, 1 - Verificado, 2 - Cancelado');
 
-            $table->longText('wallet')->nullable();
             $table->string('profile_picture')->nullable();
             $table->foreignId('buyer_id')->nullable()->references('id')->on('users')->comment('ID del usuario patrocinador');
             $table->foreignId('prefix_id')->nullable()->constrained('prefixes')->comment('el id del prefijo del tlf');

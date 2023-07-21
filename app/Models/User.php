@@ -40,7 +40,6 @@ class User extends Authenticatable implements JWTSubject
         'token_auth',
         'token_jwt',
         'email_verified_at',
-        'wallet',
         'kyc',
         'profile_picture',
         'type_service',
@@ -50,7 +49,6 @@ class User extends Authenticatable implements JWTSubject
     //     'orders',
     //     'referrals',
     //     'prefix',
-    //     'wallets'
     // ];
 
     const INACTIVE = '0';
