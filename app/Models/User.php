@@ -33,7 +33,6 @@ class User extends Authenticatable implements JWTSubject
         'binary_id',
         'binary_side',
         'user_name',
-        'nickname_referral_link',
         'name',
         'last_name',
         'admin',

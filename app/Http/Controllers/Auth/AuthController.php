@@ -400,7 +400,6 @@ class AuthController extends Controller
         $data = [
             'id' => $user->id,
             'user_name' => $user->user_name,
-            'nickname_referral_link' => $user->nickname_referral_link,
             'name' => $user->name,
             'last_name' => $user->last_name,
             'email' => $user->email,
@@ -417,9 +416,7 @@ class AuthController extends Controller
 
     public function getSponsorName($identifier)
     {
-        $user = User::where('id', $identifier)
-            ->orWhere('nickname_referral_link', $identifier)
-            ->first();
+        $user = User::where('id', $identifier)->first();
         if ($user) {
             $data_sponsor = [
                 "name" => "$user->name $user->last_name",
