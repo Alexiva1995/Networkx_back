@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProfileRequest;
 use App\Mail\CodeSecurity;
 use App\Models\Liquidaction;
 use App\Models\User;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\BrokereeService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Filesystem\Filesystem;
 
 class UserController extends Controller
 {
@@ -500,42 +502,18 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function ChangeData(Request $request)
+    public function ChangeData(UpdateProfileRequest $request)
     {
-        $user = User::find($request->auth_user_id);
+        $user = JWTAuth::parseToken()->authenticate();
         $log = new ProfileLog;
 
-        $request->validate([
-            'name'        => [
-                'nullable',
-                'string',
-                'max:255'
-            ],
-            'last_name'   => [
-                'nullable',
-                'string',
-                'max:255'
-            ],
-            'email'       => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
-            'phone'       => 'nullable',
-            'prefix_id'   => 'nullable',
-            'profile_picture' =>  [
-                'required',
-                'image'
-            ]
-
-        ]);
-
         $data = [
-            'id' => $request->auth_user_id,
-            'name' => $request->name,
-            'last_name' => $request->last_name,
-            'email' => $request->email
+            'id' => $user->id,
+            'name' => $request->validated()['name'],
+            'last_name' => $request->validated()['last_name'],
+            'email' => $request->validated()['email']
         ];
+
         $url = config('services.backend_auth.base_uri');
 
         $response = Http::withHeaders([
@@ -551,7 +529,9 @@ class UserController extends Controller
             if ($request->hasFile('profile_picture')) {
 
                 $picture = $request->file('profile_picture');
-                $name_picture = $request->auth_user_id . '.' . $picture->getClientOriginalName();
+                $name_picture = $picture->getClientOriginalName();
+                $file = new Filesystem;
+                $file->cleanDirectory(public_path('storage') . '/profile/picture/' . $request->auth_user_id . '/' . '.', $name_picture);
                 $picture->move(public_path('storage') . '/profile/picture/' . $request->auth_user_id . '/' . '.', $name_picture);
 
                 $user->profile_picture = $name_picture;
