@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateProfileRequest;
-use App\Http\Resources\UserOrdersResource;
+use App\Http\Resources\OrdersResource;
 use App\Mail\CodeSecurity;
 use App\Models\Liquidaction;
 use App\Models\User;
@@ -150,7 +150,7 @@ class UserController extends Controller
     public function getUserOrders()
     {
         $user = JWTAuth::parseToken()->authenticate();
-        return response()->json(UserOrdersResource::collection($this->orderRepository->getOrdersByUserId($user->id)));
+        return response()->json(OrdersResource::collection($this->orderRepository->getOrdersByUserId($user->id)));
     }
 
     public function getMonthlyOrders()

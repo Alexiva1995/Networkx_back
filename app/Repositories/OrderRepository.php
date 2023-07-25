@@ -16,11 +16,11 @@ class OrderRepository
 
     public function getOrdersByQuantity(int $quantity)
     {
-        return $this->model->orderBy('id', 'desc')->with('user', 'project', 'packageMembership')->get()->take($quantity);
+        return $this->model->orderBy('id', 'desc')->with('user','packageMembership')->get()->take($quantity);
     }
     public function getOrders()
     {
-        return $this->model->orderBy('id', 'desc')->with('user', 'project', 'packageMembership')->get();
+        return $this->model->orderBy('id', 'desc')->with(['user','package'])->get();
     }
 
     public function OrdersPaid()

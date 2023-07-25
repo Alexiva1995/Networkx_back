@@ -75,7 +75,6 @@ Route::middleware('jwt')->group(function () {
 
             //rutas dashboard admin b2b
             Route::get('/order/paid','sumOrderPaid');
-            Route::get('get/orders', 'getOrders');
             Route::get('/comission/paid','sumComissionPaid');
             Route::get('/gain/weekly','gainWeekly');
             Route::get('/top/users','topFiveUsers');

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserOrdersResource extends JsonResource
+class OrdersResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
