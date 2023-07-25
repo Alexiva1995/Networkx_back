@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Resources\UserOrdersResource;
 use App\Mail\CodeSecurity;
 use App\Models\Liquidaction;
 use App\Models\User;
@@ -148,25 +149,7 @@ class UserController extends Controller
     public function getUserOrders()
     {
         $user = JWTAuth::parseToken()->authenticate();
-
-        $data = [];
-
-        $orders = $user->orders;
-
-        foreach ($orders as $order) {
-            $data[] = [
-                'id' => $order->id,
-                'user_id' => $order->user->id,
-                'user_name' => strtolower(explode(" ", $order->user->name)[0] . " " . explode(" ", $order->user->last_name)[0]),
-                'status' => $order->status,
-                'description' => $order->packagesB2B->package,
-                'hash_id' => $order->hash,
-                'amount' => round($order->amount, 2),
-                'date' => $order->created_at->format('Y-m-d'),
-                'update_date' => $order->updated_at->format('Y-m-d')
-            ];
-        }
-        return response()->json($data, 200);
+        return response()->json(UserOrdersResource::collection($user->orders));
     }
 
     public function getMonthlyOrders()

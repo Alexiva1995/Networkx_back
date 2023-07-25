@@ -25,7 +25,6 @@ class CreateWalletsCommissionsTable extends Migration
             $table->foreign('transfer_id')->references('id')->on('wallets_commissions')->onUpdate('cascade')->nullable();
             $table->bigInteger('level');
             $table->string('description',100);
-            $table->foreignId('membership_id')->nullable()->constrained('projects')->comment('investment which produces this wallet');
             $table->double('amount')->nullable()->comment('amount for display');
             $table->double('amount_retired')->nullable()->comment('amount retired for calculations');
             $table->double('amount_available')->nullable()->comment('amount for calculations');

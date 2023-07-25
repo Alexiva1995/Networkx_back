@@ -56,12 +56,10 @@ class Order extends Model
         return $this->hasOne(Project::class, 'order_id', 'id');
     }
 
-    //Relacion de B2B
-    public function packagesB2B()
+    public function package()
     {
        return  $this->hasOne(Package::class, 'id', 'membership_packages_id');
     }
-    //Fin
 
     public function packageMembership()
     {
