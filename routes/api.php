@@ -103,7 +103,6 @@ Route::middleware('jwt')->group(function () {
             Route::get('get-users', 'getUsers');
             Route::get('find-user/{user_id}', 'findUser');
             Route::get('get-users-download', 'getUsersDownload');
-            Route::post('update-user-affiliate', 'updateUserAffiliate');
             Route::get('get-users-wallet-list', 'getUsersWalletsList');
             Route::post('get-filter-users-wallet-list', 'getFilterUsersWalletsList');
             Route::post('filter-users-wallet-list', 'filterUsersWalletsList');
@@ -243,10 +242,6 @@ Route::middleware('jwt')->group(function () {
         Route::post('/email/check', 'CheckCodeToChangeEmail');
         Route::post('/change/password', 'ChangePassword');
         Route::post('/send/code', 'SendSecurityCode');
-        Route::get('/get-mt-users', 'getMT5UserList');
-        Route::get('/get-mt-account', 'getMT5User');
-        Route::get('/get-mt-summary', 'getMTSummary');
-        Route::post('/create-mt-user', 'createMT5User');
         Route::get('/get-referal_links', 'getReferalLinks');
 
 
