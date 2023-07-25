@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Order;
+use App\Models\User;
 
 class OrderRepository 
 {
@@ -25,6 +26,11 @@ class OrderRepository
     public function OrdersPaid()
     {
         return $this->model->where('status', 1)->with('packageMembership')->get();
+    }
+
+    public function getOrdersByUserId(int $id)
+    {
+        return $this->model->whereUserId($id)->get();
     }
 
 }

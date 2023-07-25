@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\Formulary;
 use App\Models\Inversion;
 use App\Models\ReferalLink;
+use App\Repositories\OrderRepository;
 use App\Rules\ChangePassword;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -34,6 +35,11 @@ use Illuminate\Filesystem\Filesystem;
 
 class UserController extends Controller
 {
+    protected $orderRepository;
+
+    public function __construct(OrderRepository $orderRepository) {
+        $this->orderRepository = $orderRepository;
+    }
 
     public function showReferrals()
     {
@@ -123,8 +129,6 @@ class UserController extends Controller
         return $sortedReferrals;
     }
 
-
-
     public function getLast10Withdrawals()
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -143,13 +147,10 @@ class UserController extends Controller
         return response()->json($data, 200);
     }
 
-
-
-
     public function getUserOrders()
     {
         $user = JWTAuth::parseToken()->authenticate();
-        return response()->json(UserOrdersResource::collection($user->orders));
+        return response()->json(UserOrdersResource::collection($this->orderRepository->getOrdersByUserId($user->id)));
     }
 
     public function getMonthlyOrders()
@@ -176,8 +177,6 @@ class UserController extends Controller
 
         return response()->json($data, 200);
     }
-
-
 
     public function getMonthlyEarnings()
     {
@@ -293,7 +292,6 @@ class UserController extends Controller
         return response()->json($data, 200);
     }
 
-
     public function getUserBonus()
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -305,8 +303,6 @@ class UserController extends Controller
 
         return response()->json($data, 200);
     }
-
-
 
     public function getUsersWalletsList()
     {
@@ -744,13 +740,6 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, User $user)
     {
         if (is_null($user)) {
