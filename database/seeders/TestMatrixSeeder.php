@@ -65,7 +65,7 @@ class TestMatrixSeeder extends Seeder
         $order = Order::create([
             'user_id' => $user->id,
             'amount' => 50,
-            'hash' => null,
+            'hash' => Str::random(26),
             'status' => '1',
             'cyborg_id' => '1',
             'membership_packages_id' => 1
@@ -140,7 +140,7 @@ class TestMatrixSeeder extends Seeder
             $order = Order::create([
                 'user_id' => $user->id,
                 'amount' => 50,
-                'hash' => null,
+                'hash' => Str::random(26),
                 'status' => '1',
                 'cyborg_id' => '1',
                 'membership_packages_id' => 1
