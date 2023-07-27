@@ -153,10 +153,6 @@ class PackageMembershipController extends Controller
 
         $package = PackageMembership::find($request->package);
 
-        if ($package->type == PackageMembership::FTY_FAST && !$user->can_buy_fast) {
-            return response()->json(["message" => "You do not have permission to purchase these packages please contact support."], 403);
-        }
-
         $amount = $package->amount;
         $percent = $package->amount * 0.10;
         $userCoupon = UserCoupon::with('coupon')->where('user_id', $user->id)->where('used',false)->first();

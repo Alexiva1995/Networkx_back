@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Order;
+use App\Models\User;
 
 class OrderRepository 
 {
@@ -15,16 +16,21 @@ class OrderRepository
 
     public function getOrdersByQuantity(int $quantity)
     {
-        return $this->model->orderBy('id', 'desc')->with('user', 'project', 'packageMembership')->get()->take($quantity);
+        return $this->model->orderBy('id', 'desc')->with('user','packageMembership')->get()->take($quantity);
     }
     public function getOrders()
     {
-        return $this->model->orderBy('id', 'desc')->with('user', 'project', 'packageMembership')->get();
+        return $this->model->orderBy('id', 'desc')->with(['user','package'])->get();
     }
 
     public function OrdersPaid()
     {
         return $this->model->where('status', 1)->with('packageMembership')->get();
+    }
+
+    public function getOrdersByUserId(int $id)
+    {
+        return $this->model->whereUserId($id)->get();
     }
 
 }

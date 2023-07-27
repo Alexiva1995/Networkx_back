@@ -27,14 +27,12 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'phone',
         'code_security',
-        'status_change',
         'code_verified_at',
         'prefix_id',
         'buyer_id',
         'binary_id',
         'binary_side',
         'user_name',
-        'nickname_referral_link',
         'name',
         'last_name',
         'admin',
@@ -42,12 +40,8 @@ class User extends Authenticatable implements JWTSubject
         'token_auth',
         'token_jwt',
         'email_verified_at',
-        'matrix_level',
-        'wallet',
         'kyc',
-        'can_buy_fast',
         'profile_picture',
-        'father_cyborg_purchased_id',
         'type_service',
     ];
 
@@ -55,7 +49,6 @@ class User extends Authenticatable implements JWTSubject
     //     'orders',
     //     'referrals',
     //     'prefix',
-    //     'wallets'
     // ];
 
     const INACTIVE = '0';
@@ -232,12 +225,5 @@ class User extends Authenticatable implements JWTSubject
     public function marketPurchased()
     {
         return $this->hasMany(MarketPurchased::class);
-    }
-    /**
-     * Este metodo retorna la matrix/cyborg a la que pertenece este usuario, donde el dueño es su padre (es decir el buyer_id)
-     */
-    public function getFatherMarketPurchased()
-    {
-        return MarketPurchased::where('user_id', $this->buyer_id)->where('id', $this->father_cyborg_purchased_id)->first();
     }
 }

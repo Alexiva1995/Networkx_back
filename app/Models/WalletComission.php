@@ -28,7 +28,6 @@ class WalletComission extends Model
         'available_withdraw',
         'order_id',
         'liquidado',
-        'father_cyborg_purchased_id'
     ];
     const STATUS_AVAILABLE = 0;
     const STATUS_PENDING = 4;

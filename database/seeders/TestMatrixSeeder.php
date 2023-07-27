@@ -65,7 +65,7 @@ class TestMatrixSeeder extends Seeder
         $order = Order::create([
             'user_id' => $user->id,
             'amount' => 50,
-            'hash' => null,
+            'hash' => Str::random(26),
             'status' => '1',
             'cyborg_id' => '1',
             'membership_packages_id' => 1
@@ -122,7 +122,6 @@ class TestMatrixSeeder extends Seeder
                 'buyer_id' => round($i / 2),
                 'binary_id' => round($i / 2),
                 'binary_side' => ($i % 2) == 0 ? 'R' : 'L',
-                'father_cyborg_purchased_id' => $father->marketPurchased->first()->id
             ]);
 
             Product::create([
@@ -141,7 +140,7 @@ class TestMatrixSeeder extends Seeder
             $order = Order::create([
                 'user_id' => $user->id,
                 'amount' => 50,
-                'hash' => null,
+                'hash' => Str::random(26),
                 'status' => '1',
                 'cyborg_id' => '1',
                 'membership_packages_id' => 1

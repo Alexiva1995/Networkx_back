@@ -18,8 +18,8 @@ class WalletController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
 
         $availableCommissions = WalletComission::where('user_id', $user->id)
-        ->where('status', 0)
-        ->get();
+            ->where('status', 0)
+            ->get();
 
         $availableAmount = $availableCommissions->sum('amount');
         $availableIds = $availableCommissions->pluck('id');
@@ -42,32 +42,31 @@ class WalletController extends Controller
     }
 
     public function getMonthlyGain()
-{
-    $user = JWTAuth::parseToken()->authenticate();
+    {
+        $user = JWTAuth::parseToken()->authenticate();
 
-    // Obtener los datos de la tabla 'Wallet comision' ordenados por fecha de creación y usuario especificado
-    $monthlyGains = WalletComission::where('user_id', $user->id)->orderBy('created_at')->get();
+        // Obtener los datos de la tabla 'Wallet comision' ordenados por fecha de creación y usuario especificado
+        $monthlyGains = WalletComission::where('user_id', $user->id)->orderBy('created_at')->get();
 
-    $totalMonthlyGains = $monthlyGains->sum('amount');
+        $totalMonthlyGains = $monthlyGains->sum('amount');
 
-    // Crear un arreglo para almacenar los datos de la gráfica
-    $data = [
-        'totalMonthlyGains' => $totalMonthlyGains,
-        'days' => [],
-    ];
+        // Crear un arreglo para almacenar los datos de la gráfica
+        $data = [
+            'totalMonthlyGains' => $totalMonthlyGains,
+            'days' => [],
+        ];
 
-    // Iterar sobre los registros de la tabla 'Wallet comision'
-    foreach ($monthlyGains as $item) {
-        $diaSemana = $item->created_at->format('D');
-        $ganancias = $item->amount;
+        // Iterar sobre los registros de la tabla 'Wallet comision'
+        foreach ($monthlyGains as $item) {
+            $diaSemana = $item->created_at->format('D');
+            $ganancias = $item->amount;
+            // Agregar los datos al arreglo de los días de la semana
+            $data['days'][$diaSemana] = $ganancias;
+        }
 
-        // Agregar los datos al arreglo de los días de la semana
-        $data['days'][$diaSemana] = $ganancias;
+        // Devolver los datos de la gráfica como respuesta JSON
+        return response()->json($data, 200);
     }
-
-    // Devolver los datos de la gráfica como respuesta JSON
-    return response()->json($data, 200);
-}
 
 
 
@@ -76,10 +75,10 @@ class WalletController extends Controller
         $filter = $request->get('dataFilter');
 
         $user = JWTAuth::parseToken()->authenticate();
-        
+
 
         $walletCommissions = WalletComission::where('user_id', $user->id)
-            ->select('description', 'status', 'created_at', 'amount','id')
+            ->select('description', 'status', 'created_at', 'amount', 'id')
             ->filter($filter)
             ->get();
 
@@ -99,22 +98,22 @@ class WalletController extends Controller
     public function walletAdminDataList()
     {
         $walletCommissions = WalletComission::with('user')
-        ->select('id', 'user_id', 'description', 'status', 'created_at', 'amount')
-        ->get();
+            ->select('id', 'user_id', 'description', 'status', 'created_at', 'amount')
+            ->get();
 
-         $data = $walletCommissions->map(function ($walletCommission) {
+        $data = $walletCommissions->map(function ($walletCommission) {
             return [
-            'id' => $walletCommission->id,
-            'user_id' => $walletCommission->user_id,
-            'user_name' => $walletCommission->user->name,
-            'description' => $walletCommission->description,
-            'status' => $walletCommission->status,
-            'created_at' => $walletCommission->created_at->format('Y-m-d H:i:s'),
-            'amount' => $walletCommission->amount,
-             ];
-         });
+                'id' => $walletCommission->id,
+                'user_id' => $walletCommission->user_id,
+                'user_name' => $walletCommission->user->name,
+                'description' => $walletCommission->description,
+                'status' => $walletCommission->status,
+                'created_at' => $walletCommission->created_at->format('Y-m-d H:i:s'),
+                'amount' => $walletCommission->amount,
+            ];
+        });
 
-     return response()->json($data, 200);
+        return response()->json($data, 200);
     }
 
     public function addBalanceToUser(Request $request)
@@ -146,16 +145,16 @@ class WalletController extends Controller
         }
         $description = '';
 
-        if($selectedType == 3) {
+        if ($selectedType == 3) {
             $description = "Refund";
         }
-        if($selectedType == 2) {
+        if ($selectedType == 2) {
             $description = "Comission Level 2";
         }
-        if($selectedType == 0) {
+        if ($selectedType == 0) {
             $description = "Comission Level 1";
         }
-        if($selectedType == 1) {
+        if ($selectedType == 1) {
             $description = "Trading Profit";
         }
 
@@ -360,7 +359,7 @@ class WalletController extends Controller
 
     public function getWalletsAdmin()
     {
-        $data = WalletComission::with(['user','package'])->get();
+        $data = WalletComission::with(['user', 'package'])->get();
         return response()->json($data, 200);
     }
 
