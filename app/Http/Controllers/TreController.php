@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\Level;
 use App\Http\Traits\Tree;
@@ -18,63 +19,18 @@ class TreController extends Controller
 
     public function index(String $id)
     {
-        $user = User::findOrFail($id);
-
-        $direct_childres = User::where('buyer_id', $user->id)->get();
-
-        $referals_childrens =  $this->getChildren($direct_childres, 1);
-
-        $directs = [];
-
-        $indirects = [];
-
-        foreach($referals_childrens as $user){
-            $program = null;
-            $date = null;
-            if ($user->getProgram()) {
-                $program = "FYT ".$user->getProgram()->getTypeName();
-                $date = $user->getProgram()->created_at->format('Y-m-d');
-            }
-
-            $item = new stdClass();
-            $item->id = $user->id;
-            $item->user_name = $user->user_name;
-            $item->email = $user->email;
-            $item->children = $user->children;
-            $item->status = $user->status;
-            $item->program = $program ?? '';
-            $item->date = $date ?? '';
-            $directs[] = $item;
+        try {
+            $user = User::findOrFail($id);
+    
+            $direct_childres = User::where('buyer_id', $user->id)->get();
+    
+            // $childrens_level2 =  $this->getChildren($direct_childres, 1);
+            return response()->json(UserResource::collection($direct_childres));
+            
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(["message" => 'An error has occurred, please contact the administrator.'],500);
         }
-        
-        foreach($referals_childrens as $user)
-        {
-            foreach($user->children as $user) 
-            {
-                $program = null;
-                $date = null;
-                if ($user->getProgram()) {
-                    $program = "FYT ".$user->getProgram()->getTypeName();
-                    $date = $user->getProgram()->created_at->format('Y-m-d');
-                }
-                $item = new stdClass();
-                $item->id = $user->id;
-                $item->user_name = $user->user_name;
-                $item->email = $user->email;
-                $item->children = $user->children;
-                $item->status = $user->status;
-                $item->program = $program ?? '';
-                $item->date = $date ?? '';
-                $indirects[] = $item;
-            }
-        }
-
-        $data = [
-            'directs' => $directs,
-            'indirects' => $indirects
-        ];
-
-        return response()->json($data);
     }
 
     public function referredTree($tree)
