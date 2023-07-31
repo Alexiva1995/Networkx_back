@@ -23,10 +23,10 @@ class TreController extends Controller
             $user = User::findOrFail($id);
     
             $direct_childres = User::where('buyer_id', $user->id)->get();
-    
             // $childrens_level2 =  $this->getChildren($direct_childres, 1);
+    
             return response()->json(UserResource::collection($direct_childres));
-            
+
         } catch (\Throwable $th) {
             Log::error($th);
             return response()->json(["message" => 'An error has occurred, please contact the administrator.'],500);
